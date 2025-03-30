@@ -1,14 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <title>Histórico de Preços</title>
   <style>
-    body { width: 300px; padding: 10px; font-family: Arial; }
-    .price-entry { margin: 5px 0; padding: 5px; border-bottom: 1px solid #eee; }
-    .current { font-weight: bold; color: #4CAF50; }
+    body {
+      width: 300px;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+    }
+    .price-entry {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      background: #f5f5f5;
+    }
+    .price {
+      font-weight: bold;
+      color: #4CAF50;
+    }
+    .site {
+      color: #2196F3;
+    }
+    .date {
+      font-size: 0.8em;
+      color: #666;
+    }
   </style>
 </head>
 <body>
-  <h3>Histórico de Preços</h3>
+  <h2>Histórico de Preços</h2>
   <div id="priceHistory"></div>
   <script src="popup.js"></script>
 </body>

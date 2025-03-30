@@ -1,32 +1,33 @@
-const priceHistory = {};
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'PRICE_DETECTED') {
-    const { url, price, site } = message;
-    
-    if (!priceHistory[url]) {
-      priceHistory[url] = [];
-    }
-
-    // Adiciona ao histórico (máx. 30 registros)
-    priceHistory[url].push({
-      price,
-      date: new Date().toLocaleString(),
-      site
+// Carrega o histórico ao iniciar
+chrome.storage.local.get(['priceHistory'], (data) => {
+    let priceHistory = data.priceHistory || {};
+  
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.type === 'PRICE_DETECTED') {
+        const { url, price, site } = message;
+        
+        if (!priceHistory[url]) {
+          priceHistory[url] = [];
+        }
+  
+        // Verifica se o preço já existe (evita duplicatas)
+        const lastEntry = priceHistory[url][priceHistory[url].length - 1];
+        if (!lastEntry || lastEntry.price !== price) {
+          priceHistory[url].push({
+            price,
+            date: new Date().toLocaleString('pt-BR'),
+            site
+          });
+  
+          // Mantém apenas os últimos 30 registros
+          if (priceHistory[url].length > 30) {
+            priceHistory[url].shift();
+          }
+  
+          // Atualiza visualmente
+          chrome.action.setBadgeText({ text: price.toString() });
+          chrome.storage.local.set({ priceHistory });
+        }
+      }
     });
-
-    if (priceHistory[url].length > 30) {
-      priceHistory[url].shift();
-    }
-
-    // Salva no storage
-    chrome.storage.local.set({ priceHistory });
-
-    // Mostra notificação
-    chrome.action.setBadgeText({ text: price.toString() });
-    chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
-  }
-});
-
-// Atualiza a cada minuto
-chrome.alarms.create('priceCheck', { periodInMinutes: 1 });
+  });
